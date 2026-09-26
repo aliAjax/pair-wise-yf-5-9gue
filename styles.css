@@ -1,0 +1,191 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f6f1e7;
+  color: #33312c;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: #4a5d3a;
+  color: #fdfbf5;
+}
+
+.topbar h1 { font-size: 20px; margin: 0; }
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 24px 48px;
+}
+
+.panel {
+  background: #fffdf8;
+  border: 1px solid #e3d9c4;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-top: 16px;
+}
+
+.panel h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: #4a5d3a;
+  border-left: 4px solid #7a8b5a;
+  padding-left: 8px;
+}
+
+/* 机器看板 */
+.machine-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.machine-card {
+  border: 1px solid #ddd2b8;
+  border-radius: 6px;
+  background: #fbf7ec;
+  overflow: hidden;
+}
+
+.machine-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #efe6cf;
+}
+
+.machine-name { font-weight: 600; }
+
+.machine-body { padding: 10px 12px; min-height: 64px; }
+
+.slot-list { list-style: none; margin: 0; padding: 0; }
+.slot-list li {
+  padding: 6px 0;
+  border-bottom: 1px dashed #e0d6bd;
+  font-size: 14px;
+}
+.slot-list li:last-child { border-bottom: none; }
+
+.time { color: #8a7d5f; font-size: 13px; }
+
+.empty { color: #a89a7c; font-size: 14px; padding: 6px 0; }
+
+/* 标签 */
+.tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 18px;
+}
+.tag-hot     { background: #f4d7c8; color: #a34a1f; }
+.tag-low     { background: #dde8d2; color: #4a6b35; }
+.tag-fragile { background: #f6dada; color: #a83232; }
+.tag-ok      { background: #d8e8d0; color: #3c6b2f; }
+.tag-warn    { background: #f7e6c4; color: #9a6b12; }
+.tag-idle    { background: #e6e2d8; color: #6f6a5c; }
+
+/* 表单 */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px 16px;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  color: #6f6a5c;
+  gap: 4px;
+}
+
+input, select {
+  padding: 6px 8px;
+  border: 1px solid #cfc4a8;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #fff;
+  color: #33312c;
+}
+
+input[readonly] { background: #f3eee0; }
+
+.hints { min-height: 24px; margin: 8px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn {
+  padding: 7px 16px;
+  border: 1px solid #cfc4a8;
+  border-radius: 4px;
+  background: #f3eee0;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn:hover { background: #e9e1cc; }
+
+.btn-primary {
+  background: #4a5d3a;
+  border-color: #4a5d3a;
+  color: #fdfbf5;
+}
+.btn-primary:hover { background: #3d4d30; }
+
+.btn-small {
+  padding: 2px 8px;
+  font-size: 12px;
+  border: 1px solid #cfc4a8;
+  border-radius: 4px;
+  background: #f3eee0;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.btn-small:hover { background: #e9e1cc; }
+
+/* 消息 */
+.msg { margin-top: 12px; padding: 10px 12px; border-radius: 4px; font-size: 14px; }
+.msg:empty { display: none; }
+.msg-ok    { background: #e2eeda; color: #3c6b2f; border: 1px solid #c2d8b4; }
+.msg-error { background: #f7dede; color: #a83232; border: 1px solid #eab9b9; }
+.msg-error ul { margin: 0; padding-left: 18px; }
+
+/* 批次档案表 */
+.table-wrap { overflow-x: auto; }
+
+.archive-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.archive-table th, .archive-table td {
+  border-bottom: 1px solid #e8dfc9;
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.archive-table th {
+  background: #efe6cf;
+  color: #5c5540;
+  font-weight: 600;
+}
+
+.in-cell input { width: 190px; margin-right: 6px; }
+
+/* 旧排程 */
+.history-list { list-style: none; margin: 0; padding: 0; }
+.history-list li {
+  padding: 8px 0;
+  border-bottom: 1px dashed #e0d6bd;
+  font-size: 14px;
+}
+.history-list li:last-child { border-bottom: none; }
