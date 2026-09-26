@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中药饮片烘干排程台</title>
+<style>
+  :root {
+    --ink: #2f2a24;
+    --paper: #f6f1e6;
+    --card: #fffdf8;
+    --line: #e0d5bf;
+    --accent: #8c5a2b;
+    --green: #3d7a4f;
+    --red: #b03a2e;
+    --orange: #c07a1f;
+    --gray: #8a8378;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  header.top {
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+    padding: 18px 28px;
+    background: var(--card);
+    border-bottom: 2px solid var(--accent);
+  }
+  header.top h1 { margin: 0; font-size: 22px; letter-spacing: 2px; }
+  header.top .note { color: var(--gray); font-size: 13px; }
+  header.top button { margin-left: auto; }
+  main { max-width: 1180px; margin: 0 auto; padding: 20px 24px 48px; }
+  section { margin-bottom: 28px; }
+  h2 {
+    font-size: 17px; margin: 0 0 12px;
+    padding-left: 10px; border-left: 4px solid var(--accent);
+  }
+  /* 机器看板 */
+  .machines { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .machine {
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .machine header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .machine h3 { margin: 0; font-size: 16px; }
+  .machine .temp { color: var(--gray); font-size: 13px; margin: 0 0 8px; }
+  .machine ul { margin: 8px 0 0; padding: 0; list-style: none; font-size: 13px; }
+  .machine li { padding: 5px 0; border-top: 1px dashed var(--line); }
+  .machine .empty { color: var(--gray); }
+  .badge {
+    display: inline-block; padding: 1px 8px; border-radius: 10px;
+    font-size: 12px; line-height: 18px; white-space: nowrap;
+  }
+  .badge.hot  { background: #f7e3df; color: var(--red); }
+  .badge.low  { background: #e2eee6; color: var(--green); }
+  .badge.busy { background: #f7e3df; color: var(--red); }
+  .badge.idle { background: #e2eee6; color: var(--green); }
+  .badge.wait { background: #eee9df; color: var(--gray); }
+  .badge.done { background: #e2eee6; color: var(--green); }
+  .badge.rework { background: #f9ecd8; color: var(--orange); }
+  .badge.sens { background: #f7e3df; color: var(--red); }
+  .badge.norm { background: #eee9df; color: var(--gray); }
+  .badge.no   { background: #f9ecd8; color: var(--orange); }
+  /* 排批表单 */
+  form#schedule-form {
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    padding: 16px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px 16px;
+  }
+  form#schedule-form label { display: block; font-size: 13px; color: var(--gray); margin-bottom: 2px; }
+  form#schedule-form .field { min-width: 0; }
+  form#schedule-form input, form#schedule-form select {
+    width: 100%; padding: 7px 9px; font-size: 14px;
+    border: 1px solid var(--line); border-radius: 5px; background: #fff; color: var(--ink);
+  }
+  form#schedule-form .check { display: flex; align-items: flex-end; gap: 8px; padding-bottom: 8px; }
+  form#schedule-form .check input { width: auto; }
+  form#schedule-form .check label { margin: 0; color: var(--ink); font-size: 14px; }
+  form#schedule-form .actions { display: flex; align-items: flex-end; }
+  button {
+    padding: 8px 18px; font-size: 14px; cursor: pointer;
+    border: 1px solid var(--accent); border-radius: 5px;
+    background: var(--accent); color: #fff;
+  }
+  button.ghost { background: transparent; color: var(--accent); }
+  button.small { padding: 3px 10px; font-size: 13px; }
+  #form-msg { margin-top: 10px; font-size: 14px; }
+  #form-msg.err { color: var(--red); }
+  #form-msg.ok  { color: var(--green); }
+  #form-msg ul { margin: 4px 0 0; padding-left: 20px; }
+  /* 批次档案 */
+  .table-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { background: #f3ecdd; font-weight: 600; font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  td .sub { display: block; font-size: 12px; color: var(--gray); }
+  td input[type="datetime-local"] {
+    padding: 3px 6px; font-size: 13px; border: 1px solid var(--line); border-radius: 4px;
+  }
+  /* 留档 */
+  #history-list { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 6px 16px; }
+  #history-list p { margin: 8px 0; font-size: 14px; }
+  #history-list .muted { color: var(--gray); font-size: 13px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>中药饮片烘干排程台</h1>
+  <span class="note">数据仅保存于本浏览器（localStorage），不联网、无外部依赖</span>
+  <button id="reset-btn" class="ghost small">恢复预置数据</button>
+</header>
+
+<main>
+  <section>
+    <h2>机器看板</h2>
+    <div id="machine-board" class="machines"></div>
+  </section>
+
+  <section>
+    <h2>排批登记</h2>
+    <form id="schedule-form" novalidate>
+      <div class="field">
+        <label for="f-batch">待排批次</label>
+        <select id="f-batch" required></select>
+      </div>
+      <div class="field">
+        <label for="f-herb">药材</label>
+        <input id="f-herb" type="text" required>
+      </div>
+      <div class="field">
+        <label for="f-moisture">含水率（%）</label>
+        <input id="f-moisture" type="number" min="0" max="100" step="0.1" required>
+      </div>
+      <div class="field">
+        <label for="f-target">目标干度（含水率 ≤ %）</label>
+        <input id="f-target" type="number" min="0" max="100" step="0.1" required>
+      </div>
+      <div class="field check">
+        <input id="f-heat" type="checkbox">
+        <label for="f-heat">热敏药材（禁入高温炉）</label>
+      </div>
+      <div class="field">
+        <label for="f-machine">烘干机</label>
+        <select id="f-machine" required></select>
+      </div>
+      <div class="field">
+        <label for="f-entry">入炉时刻</label>
+        <input id="f-entry" type="datetime-local" required>
+      </div>
+      <div class="field">
+        <label for="f-exit">出锅时刻</label>
+        <input id="f-exit" type="datetime-local" required>
+      </div>
+      <div class="actions">
+        <button type="submit">校验并排批</button>
+      </div>
+    </form>
+    <div id="form-msg"></div>
+  </section>
+
+  <section>
+    <h2>批次档案</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>批次</th><th>药材</th><th>含水率</th><th>目标干度</th>
+            <th>特性</th><th>含水率复测</th><th>状态</th><th>机位 / 时段</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="batch-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>留档记录（旧排程保留，不参与时段校验）</h2>
+    <div id="history-list"></div>
+  </section>
+</main>
+
+<script src="js/rules.js"></script>
+<script src="js/machines.js"></script>
+<script src="js/batches.js"></script>
+</body>
+</html>
